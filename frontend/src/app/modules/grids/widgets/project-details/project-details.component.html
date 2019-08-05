@@ -1,0 +1,17 @@
+<widget-header
+    [name]="widgetName"
+    [icon]="'flag'"
+    (onRenamed)="renameWidget($event)">
+
+  <widget-menu
+      [resource]="resource">
+  </widget-menu>
+</widget-header>
+
+<div class="grid--widget-content">
+  <ul>
+    <li *ngFor="let cf of customFields">
+      {{cf.title}}: {{cf.value}}
+    </li>
+  </ul>
+</div>
