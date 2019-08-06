@@ -26,40 +26,13 @@
 # See docs/COPYRIGHT.rdoc for more details.
 #++
 
-require 'api/v3/projects/project_representer'
-
 module API
   module V3
     module Projects
-      class ProjectsAPI < ::API::OpenProjectAPI
-        resources :projects do
-          get &::API::V3::Utilities::Endpoints::Index.new(model: Project,
-                                                          scope: -> { Project.visible(User.current).includes(:enabled_modules) })
-                                                     .mount
-
-          mount ::API::V3::Projects::Schemas::ProjectSchemaAPI
-
-          params do
-            requires :id, desc: 'Project id'
-          end
-          route_param :id do
-            after_validation do
-              @project = Project.find(params[:id])
-
-              authorize(:view_project, context: @project) do
-                raise API::Errors::NotFound.new
-              end
-            end
-
-            get &::API::V3::Utilities::Endpoints::Show.new(model: Project).mount
-
-            mount API::V3::Projects::AvailableAssigneesAPI
-            mount API::V3::Projects::AvailableResponsiblesAPI
-            mount API::V3::WorkPackages::WorkPackagesByProjectAPI
-            mount API::V3::Categories::CategoriesByProjectAPI
-            mount API::V3::Versions::VersionsByProjectAPI
-            mount API::V3::Types::TypesByProjectAPI
-            mount API::V3::Queries::QueriesByProjectAPI
+      module Schemas
+        class ProjectSchemaAPI < ::API::OpenProjectAPI
+          resources :schema do
+            get &::API::V3::Utilities::Endpoints::Schema.new(model: Project).mount
           end
         end
       end

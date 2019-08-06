@@ -1,5 +1,3 @@
-#-- encoding: UTF-8
-
 #-- copyright
 # OpenProject is a project management system.
 # Copyright (C) 2012-2017 the OpenProject Foundation (OPF)
@@ -29,55 +27,6 @@
 #++
 
 module Projects
-  class BaseContract < ::ModelContract
-    include AssignableValuesContract
-
-    attribute :name
-    attribute :identifier
-    attribute :description
-    attribute :is_public
-    attribute :status do
-      validate_status_not_nil
-      validate_status_included
-    end
-    attribute :parent do
-      validate_parent_visible
-    end
-
-    attribute_alias :is_public, :public
-
-    def validate_status_not_nil
-      errors.add(:status, :blank) if model.status.nil?
-    end
-
-    def validate_status_included
-      if model.status.present? && !assignable_statuses.include?(model.status)
-        errors.add(:status, :inclusion)
-      end
-    end
-
-    def validate_parent_visible
-      errors.add(:parent, :does_not_exist) if model.parent && model.parent_id_changed? && !model.parent.visible?
-    end
-
-    def assignable_parents
-      Project.visible
-    end
-
-    def assignable_statuses
-      Project.statuses.keys
-    end
-
-    def assignable_custom_field_values(custom_field)
-      custom_field.possible_values
-    end
-
-    def available_custom_fields
-      if user.admin?
-        model.available_custom_fields
-      else
-        model.available_custom_fields.select(&:visible?)
-      end
-    end
+  class CreateContract < BaseContract
   end
 end
